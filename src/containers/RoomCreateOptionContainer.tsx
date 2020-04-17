@@ -5,7 +5,8 @@ const {TabPane} = Tabs;
 
 export interface CreateJoinContainerProp {
   visible: boolean;
-  onCreateRoom: (roomId?: string) => void;
+  name: string,
+  onCreateRoom: (isHost: boolean, name: string, roomId?: string) => void;
 }
 
 export const RoomCreateOptionContainer = (props: CreateJoinContainerProp) => {
@@ -14,7 +15,7 @@ export const RoomCreateOptionContainer = (props: CreateJoinContainerProp) => {
   return props.visible ? <Card>
     <Tabs defaultActiveKey="1">
       <TabPane tab="Create" key="1">
-        <Button onClick={() => props.onCreateRoom()}> Start </Button>
+        <Button onClick={() => props.onCreateRoom(true, props.name)}> Start </Button>
       </TabPane>
       <TabPane tab="Join" key="2">
         <Space>
@@ -25,7 +26,7 @@ export const RoomCreateOptionContainer = (props: CreateJoinContainerProp) => {
           <Row>
             <Button onClick={() => {
               if (roomId.trim().length > 0) {
-                props.onCreateRoom(roomId);
+                props.onCreateRoom(false, props.name, roomId);
               }
             }}> Join </Button>
           </Row>

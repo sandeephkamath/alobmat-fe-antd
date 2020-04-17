@@ -3,6 +3,7 @@ import {GameState, Player} from "./entities";
 
 export type PlayerUpdateListener = (player: Player) => void;
 export type SetPlayerId = (id: string) => any;
+export type SetRoomId = (id: string) => any;
 export type NewPlayerListener = (id: string) => any;
 
 
@@ -59,7 +60,7 @@ class Connector {
     })
   }
 
-  joinNew(name: string, roomId?: string) {
+  joinNew(name: string, setRoomId: SetRoomId, roomId?: string) {
     const endPoint = this.getEndPoint();
     const colyseus = new Client(endPoint);
     let options = {name: name};
@@ -68,6 +69,7 @@ class Connector {
       this.room = room;
       this.sessionId = room.sessionId;
       console.log("Room Id " + room.id);
+      setRoomId(room.id);
       room.state.players.onChange = (player, id) => {
         if (id === this.sessionId) {
           console.log("Change triggered for player");

@@ -19,15 +19,16 @@ export const GameContainer = () => {
     return gameState === GameState.ENTER_NAME;
   };
 
-  useEffect(() => {
+  const onNameEnter = (name: string) => {
+    setName(name);
     const isNameSet: boolean = name.trim().length > 0;
     const isRoomSet: boolean = roomId.trim().length > 0;
     if (isNameSet && isRoomSet) {
-      setGameState(GameState.WAITING_TO_START);
+      onCreateRoom(false, name, roomId);
     } else if (isNameSet) {
       setGameState(GameState.CREATE_OR_JOIN);
     }
-  }, [name, roomId]);
+  };
 
   useEffect(() => {
     let roomId = queryString.parse(window.location.search)['roomId']?.toString() || '';
@@ -50,18 +51,20 @@ export const GameContainer = () => {
     setPlayerNames(playerNames => [...playerNames, playerName]);
   };
 
-  const onCreateRoom = (roomId?: string) => {
-    setIsHost(!roomId);
+  const onCreateRoom = (isHost: boolean, name: string, roomId?: string) => {
+    setIsHost(isHost);
     setGameState(GameState.WAITING_TO_START);
-    ColyseusConnector.joinNew(name, roomId);
+    ColyseusConnector.joinNew(name, setRoomId, roomId);
     ColyseusConnector.setNewPlayerListener(onNewPlayerAdd);
   };
 
   return (<Row>
-    <NameContainer visible={showNameContainer()} onNameEnter={setName}/>
+    <NameContainer visible={showNameContainer()} onNameEnter={onNameEnter}/>
     <RoomCreateOptionContainer visible={showCreateOptionContainer()}
+                               name={name}
                                onCreateRoom={onCreateRoom}/>
     <WaitingToJoinContainer onStart={onStart} visible={showWaitingToJoinContainer()}
+                            roomId={roomId}
                             playerNames={playerNames}
                             isHost={isHost}/>
   </Row>);
