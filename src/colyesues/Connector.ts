@@ -14,6 +14,7 @@ class Connector {
   private playerListener?: PlayerUpdateListener;
   private newPlayerListener?: NewPlayerListener;
   private currentPlayerListener?: SetPlayerId;
+  private numberPickListener?: (num: number) => void;
 
 
   private getEndPoint() {
@@ -86,8 +87,17 @@ class Connector {
             if (this.currentPlayerListener) {
               this.currentPlayerListener(change.value);
             }
+          } else {
+            console.log("Change in field " + change.field);
+            console.log("Change in field  value" + change.value);
           }
         })
+      };
+
+      room.state.pickedNumbers.onAdd = (num) => {
+        if (this.numberPickListener) {
+          this.numberPickListener(num);
+        }
       };
 
       room.state.players.onAdd = (player, id) => {
@@ -106,6 +116,10 @@ class Connector {
     this.room.send({number: num})
   }
 
+  sendNumber(num: number) {
+    this.room.send({number: num})
+  }
+
   setPlayerListener(listener: PlayerUpdateListener) {
     this.playerListener = listener;
   }
@@ -116,6 +130,10 @@ class Connector {
 
   setNewPlayerListener(newPlayerListener: NewPlayerListener) {
     this.newPlayerListener = newPlayerListener;
+  }
+
+  setNumberPickListener(numberPickListener: (num: number) => void) {
+    this.numberPickListener = numberPickListener;
   }
 
   start() {

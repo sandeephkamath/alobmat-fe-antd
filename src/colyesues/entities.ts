@@ -34,4 +34,7 @@ export class GameState extends Schema {
 
   @type("string")
   currentPlayerId = "";
+
+  @type(["number"])
+  pickedNumbers = new ArraySchema<number>();
 }

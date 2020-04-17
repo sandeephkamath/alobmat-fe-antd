@@ -15,6 +15,7 @@ export const GameContainer = () => {
   const [isHost, setIsHost] = useState(false);
   const [gameState, setGameState] = useState(GameState.ENTER_NAME);
   const [playerNames, setPlayerNames] = useState<Array<string>>([]);
+  const [pickedNumbers, setPickedNumbers] = useState<Array<number>>([]);
 
   const showNameContainer = () => {
     return gameState === GameState.ENTER_NAME;
@@ -46,6 +47,9 @@ export const GameContainer = () => {
 
   const onStart = () => {
     ColyseusConnector.start();
+    ColyseusConnector.setNumberPickListener((num) => {
+      setPickedNumbers((old) => [...old, num])
+    });
   };
 
   const onNewPlayerAdd = (playerName: string) => {
@@ -59,6 +63,10 @@ export const GameContainer = () => {
     ColyseusConnector.setNewPlayerListener(onNewPlayerAdd);
   };
 
+  const onNumberPick = (num: number) => {
+    ColyseusConnector.sendNumber(num);
+  };
+
   return (<Row>
     <NameContainer visible={showNameContainer()} onNameEnter={onNameEnter}/>
     <RoomCreateOptionContainer visible={showCreateOptionContainer()}
@@ -68,6 +76,6 @@ export const GameContainer = () => {
                             roomId={roomId}
                             playerNames={playerNames}
                             isHost={isHost}/>
-    <NumberGrid selectedNumbers={[1]}/>
+    <NumberGrid onNumberPick={onNumberPick} selectedNumbers={pickedNumbers}/>
   </Row>);
 };

@@ -3,6 +3,7 @@ import React from "react";
 
 export interface NumberGridProps {
   selectedNumbers: Array<number>;
+  onNumberPick: (num: number) => void;
 }
 
 export const NumberGrid = (props: NumberGridProps) => {
@@ -12,7 +13,7 @@ export const NumberGrid = (props: NumberGridProps) => {
   const getNumberButton = (num: number) => {
     return (<Button disabled={props.selectedNumbers.indexOf(num) > -1}
                     value={num}
-                    onClick={() => console.log(num)}
+                    onClick={() => props.onNumberPick(num)}
                     style={{width: '80px'}}>{num}</Button>);
   };
 
