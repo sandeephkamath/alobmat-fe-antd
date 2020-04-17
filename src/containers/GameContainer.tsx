@@ -6,6 +6,7 @@ import {GameState} from "./GameState";
 import * as queryString from 'query-string';
 import {WaitingToJoinContainer} from "./WaitingToJoinContainer";
 import {ColyseusConnector} from "../colyesues/Connector";
+import {NumberGrid} from "./NumberGrid";
 
 export const GameContainer = () => {
 
@@ -67,5 +68,6 @@ export const GameContainer = () => {
                             roomId={roomId}
                             playerNames={playerNames}
                             isHost={isHost}/>
+    <NumberGrid selectedNumbers={[1]}/>
   </Row>);
 };
