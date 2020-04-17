@@ -3,6 +3,7 @@ import {GameState, Player} from "./entities";
 
 export type PlayerUpdateListener = (player: Player) => void;
 export type SetPlayerId = (id: string) => any;
+export type NewPlayerListener = (id: string) => any;
 
 
 class Connector {
@@ -10,6 +11,7 @@ class Connector {
   private room: Room = new Room<any>("");
   private sessionId = "";
   private playerListener?: PlayerUpdateListener;
+  private newPlayerListener?: NewPlayerListener;
   private currentPlayerListener?: SetPlayerId;
 
 
@@ -87,7 +89,12 @@ class Connector {
       };
 
       room.state.players.onAdd = (player, id) => {
-        console.log("Player added");
+        if (id !== this.sessionId) {
+          console.log(player.name + " was added");
+          if (this.newPlayerListener) {
+            this.newPlayerListener(player.name);
+          }
+        }
       }
 
     })
@@ -103,6 +110,10 @@ class Connector {
 
   setCurrentPlayerIdListener(listener: SetPlayerId) {
     this.currentPlayerListener = listener;
+  }
+
+  setNewPlayerListener(newPlayerListener: NewPlayerListener) {
+    this.newPlayerListener = newPlayerListener;
   }
 
   start() {

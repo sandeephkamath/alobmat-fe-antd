@@ -5,6 +5,7 @@ export interface WaitingToJoinContainerProps {
   visible: boolean;
   isHost: boolean;
   onStart: VoidFunction;
+  playerNames: Array<string>
 }
 
 export const WaitingToJoinContainer = (props: WaitingToJoinContainerProps) => {
@@ -16,7 +17,8 @@ export const WaitingToJoinContainer = (props: WaitingToJoinContainerProps) => {
   const startButton = <Button onClick={props.onStart}>Start </Button>
 
   return props.visible ? <Card title={getTitle()} extra={<Spin/>}>
-    <Space>
+    <Space direction={"vertical"}>
+      {props.playerNames.map(name => <p>{name} joined</p>)}
       {props.isHost ? startButton : null}
     </Space>
   </Card> : null;
