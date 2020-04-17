@@ -1,0 +1,3 @@
+export enum GameState {
+  ENTER_NAME, CREATE_OR_JOIN, WAITING_TO_START, PLAYING
+}
