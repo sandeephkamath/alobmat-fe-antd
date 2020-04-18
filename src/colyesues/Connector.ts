@@ -35,9 +35,10 @@ class Connector {
       this.sessionId = room.sessionId;
       console.log("Room Id " + room.id);
       setPlayer(room.sessionId);
+
       room.state.players.onChange = (player, id) => {
         if (id === this.sessionId) {
-          if (this.playerListener) {
+          if (this.playerListener && player.chit.firstRow.length > 1) {
             this.playerListener(player);
           }
         }
