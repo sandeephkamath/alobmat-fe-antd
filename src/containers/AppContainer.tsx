@@ -11,7 +11,6 @@ export const AppContainer = () => {
 
   const [playerMap, setPlayerMap] = useState(new Map<string, Player>());
 
-
   return (
       <React.Fragment>
         <Header>
@@ -23,7 +22,7 @@ export const AppContainer = () => {
           <Content style={{padding: '0 50px', minHeight: '100vh'}}>
             <GameContainer opponentsUpdate={setPlayerMap}/>
           </Content>
-          <Sider theme={"light"}>
+          <Sider width={'400px'} theme={"light"}>
             <OpponentsChitContainer opponentsMap={playerMap}/>
           </Sider>
         </Layout>

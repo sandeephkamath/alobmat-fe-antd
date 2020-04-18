@@ -19,7 +19,7 @@ export const ChitContainer = (props: ChitContainerProps) => {
         values[index] = block.value.toString();
       }
     });
-    return <Space>{values.map(value => <Button style={{width: '80px'}}>{value}</Button>)}</Space>;
+    return <Space>{values.map(value => <Button style={{width: '30px',padding:'5px'}}>{value}</Button>)}</Space>;
   };
   const chit = props.chit;
 

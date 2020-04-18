@@ -9,7 +9,8 @@ export interface OpponentsChitContainerProps {
 
 export const OpponentsChitContainer = (props: OpponentsChitContainerProps) => {
 
-  return <Space direction={"vertical"}>{Array.from(props.opponentsMap.values()).map(player => {
+  return <Space style={{paddingLeft: '20px'}}
+                direction={"vertical"}>{Array.from(props.opponentsMap.values()).map(player => {
     return <Space direction={"vertical"}>
       <ChitContainer chit={player.chit} title={player.name}/>
     </Space>
