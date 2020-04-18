@@ -47,9 +47,6 @@ export const GameContainer = () => {
 
   const onStart = () => {
     ColyseusConnector.start();
-    ColyseusConnector.setNumberPickListener((num) => {
-      setPickedNumbers((old) => [...old, num])
-    });
   };
 
   const onNewPlayerAdd = (playerName: string) => {
@@ -61,6 +58,9 @@ export const GameContainer = () => {
     setGameState(GameState.WAITING_TO_START);
     ColyseusConnector.joinNew(name, setRoomId, roomId);
     ColyseusConnector.setNewPlayerListener(onNewPlayerAdd);
+    ColyseusConnector.setNumberPickListener((num) => {
+      setPickedNumbers((old) => [...old, num])
+    });
   };
 
   const onNumberPick = (num: number) => {

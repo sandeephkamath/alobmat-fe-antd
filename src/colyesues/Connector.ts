@@ -88,13 +88,14 @@ class Connector {
               this.currentPlayerListener(change.value);
             }
           } else {
-            console.log("Change in field " + change.field);
-            console.log("Change in field  value" + change.value);
+            /*console.log("Change in field " + change.field);
+            console.log("Change in field  value" + change.value);*/
           }
         })
       };
 
       room.state.pickedNumbers.onAdd = (num) => {
+        console.log(num);
         if (this.numberPickListener) {
           this.numberPickListener(num);
         }
