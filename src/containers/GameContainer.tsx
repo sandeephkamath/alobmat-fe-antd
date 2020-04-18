@@ -9,7 +9,11 @@ import {ColyseusConnector} from "../colyesues/Connector";
 import {PlayerArea} from "./PlayerArea";
 import {Chit, Player} from "../colyesues/entities";
 
-export const GameContainer = () => {
+export interface GameContainerProps {
+  opponentsUpdate: (map: Map<string, Player>) => void;
+}
+
+export const GameContainer = (props: GameContainerProps) => {
 
   const [name, setName] = useState('');
   const [roomId, setRoomId] = useState('');
@@ -19,10 +23,18 @@ export const GameContainer = () => {
   const [gameState, setGameState] = useState(GameState.ENTER_NAME);
   const [playerNames, setPlayerNames] = useState<Array<string>>([]);
   const [pickedNumbers, setPickedNumbers] = useState<Array<number>>([]);
+  const [playerMap, setPlayerMap] = useState(new Map<string, Player>());
   const [chit, setChit] = useState<Chit>(new Chit());
 
   const shouldShowNameContainer = () => {
     return gameState === GameState.ENTER_NAME;
+  };
+
+  const onOpponentEvent = (playerId: string, player: Player) => {
+    const updatedPlayers = new Map(playerMap);
+    updatedPlayers.set(playerId, player);
+    setPlayerMap((old) => old.set(playerId, player));
+    props.opponentsUpdate(updatedPlayers);
   };
 
   const onNameEnter = (name: string) => {
@@ -88,6 +100,7 @@ export const GameContainer = () => {
     ColyseusConnector.setPlayerListener(onPlayerChange);
     ColyseusConnector.setGameStartListener(onGameStart);
     ColyseusConnector.setTurnChangeListener(onTurnChange);
+    ColyseusConnector.setOpponentChangeListener(onOpponentEvent);
   };
 
   const onNumberPick = (num: number) => {

@@ -17,7 +17,7 @@ export const PlayerArea = (props: PlayerAreaProps) => {
   return props.visible ? <Card>
     <Space direction={"vertical"}>
       <ChitContainer
-          playerName={props.isPlayerTurn ? 'Your Turn' : `Waiting for ${props.nextPlayerName}`}
+          title={props.isPlayerTurn ? 'Your Turn' : `Waiting for ${props.nextPlayerName}`}
           chit={props.chit}/>
       <NumberGrid isPlayerTurn={props.isPlayerTurn}
                   selectedNumbers={props.pickedNumbers}

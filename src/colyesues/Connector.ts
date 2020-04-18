@@ -5,6 +5,7 @@ export type PlayerUpdateListener = (player: Player) => void;
 export type SetPlayerId = (id: string) => any;
 export type SetRoomId = (id: string) => any;
 export type NewPlayerListener = (id: string) => any;
+export type OpponentChangeListener = (playerId: string, player: Player) => any;
 
 export type TurnChangeListener = (isPlayerTurn: boolean, message: string, nextPlayerName: string) => any;
 
@@ -18,6 +19,7 @@ class Connector {
   private numberPickListener?: (num: number) => void;
   private gameStartListener?: VoidFunction;
   private turnChangeListener?: TurnChangeListener;
+  private opponentChangeListener?: OpponentChangeListener;
 
 
   private getEndPoint() {
@@ -37,13 +39,16 @@ class Connector {
     roomPromise.then(room => {
       this.room = room;
       this.sessionId = room.sessionId;
-      console.log("Room Id " + room.id);
       setRoomId(room.id);
       room.state.players.onChange = (player, id) => {
         if (id === this.sessionId) {
-          console.log("Change triggered for player");
           if (this.playerListener) {
             this.playerListener(player);
+          }
+        } else {
+          console.log(id);
+          if (this.opponentChangeListener) {
+            this.opponentChangeListener(id, player);
           }
         }
       };
@@ -111,6 +116,10 @@ class Connector {
 
   setNumberPickListener(numberPickListener: (num: number) => void) {
     this.numberPickListener = numberPickListener;
+  }
+
+  setOpponentChangeListener(listener: OpponentChangeListener) {
+    this.opponentChangeListener = listener;
   }
 
   start() {

@@ -1,24 +1,33 @@
 import {Layout, Menu} from "antd";
-import React from "react";
+import React, {useState} from "react";
 import 'antd/dist/antd.css';
 import {GameContainer} from "./GameContainer";
+import {OpponentsChitContainer} from "./OpponentsChitContainer";
+import {Player} from "../colyesues/entities";
 
 const {Header, Content, Footer, Sider} = Layout;
 
 export const AppContainer = () => {
+
+  const [playerMap, setPlayerMap] = useState(new Map<string, Player>());
+
+
   return (
       <React.Fragment>
+        <Header>
+          <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+            <Menu.Item>Alobmat</Menu.Item>
+          </Menu>
+        </Header>
         <Layout>
-          <Header>
-            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
-              <Menu.Item>Alobmat</Menu.Item>
-            </Menu>
-          </Header>
           <Content style={{padding: '0 50px', minHeight: '100vh'}}>
-            <GameContainer/>
+            <GameContainer opponentsUpdate={setPlayerMap}/>
           </Content>
-          <Footer style={{textAlign: 'center'}}>Ant Design ©2018 Created by Ant UED</Footer>
+          <Sider theme={"light"}>
+            <OpponentsChitContainer opponentsMap={playerMap}/>
+          </Sider>
         </Layout>
+        <Footer style={{textAlign: 'center'}}>Ant Design ©2018 Created by Ant UED</Footer>
       </React.Fragment>
   );
 };
