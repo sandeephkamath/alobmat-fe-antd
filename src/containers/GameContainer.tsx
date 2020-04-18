@@ -94,7 +94,7 @@ export const GameContainer = (props: GameContainerProps) => {
     setIsMyTurn(isPlayerTurn);
     setNextPlayerName(nextPlayerName);
     if (numberMessage.trim().length > 0) {
-      message.info(numberMessage);
+      message.info({content: numberMessage, key: 1});
     }
   };
 
