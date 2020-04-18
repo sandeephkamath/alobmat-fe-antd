@@ -1,14 +1,14 @@
 import {Client, Room} from "colyseus.js";
-import {GameState, Player} from "./entities";
+import {GameState, Player, WonPlayer} from "./entities";
 
 export type PlayerUpdateListener = (player: Player) => void;
-export type SetPlayerId = (id: string) => any;
 export type SetRoomId = (id: string) => any;
 export type NewPlayerListener = (id: string) => any;
 export type OpponentChangeListener = (playerId: string, player: Player) => any;
 
 export type TurnChangeListener = (isPlayerTurn: boolean, message: string, nextPlayerName: string) => any;
 
+export type GameOverListener = (responses: Array<WonPlayer>) => void;
 
 class Connector {
 
@@ -20,6 +20,7 @@ class Connector {
   private gameStartListener?: VoidFunction;
   private turnChangeListener?: TurnChangeListener;
   private opponentChangeListener?: OpponentChangeListener;
+  private gameOverListener?: GameOverListener;
 
 
   private getEndPoint() {
@@ -46,7 +47,6 @@ class Connector {
             this.playerListener(player);
           }
         } else {
-          console.log(id);
           if (this.opponentChangeListener) {
             this.opponentChangeListener(id, player);
           }
@@ -69,6 +69,12 @@ class Connector {
           const nextPlayerName = message.nextTurnPlayerName;
           if (this.turnChangeListener) {
             this.turnChangeListener(isPlayerTurn, messageToDisplay, nextPlayerName);
+          }
+        } else if (message.event) {
+          const wonResponses: Array<WonPlayer> = message.positions;
+          const hasPlayerWon = wonResponses.filter(resp => resp.playerId === this.sessionId).length > 0;
+          if (hasPlayerWon && this.gameOverListener) {
+            this.gameOverListener(wonResponses);
           }
         }
       });
@@ -121,6 +127,11 @@ class Connector {
   setOpponentChangeListener(listener: OpponentChangeListener) {
     this.opponentChangeListener = listener;
   }
+
+  setGameOverListener(listener: GameOverListener) {
+    this.gameOverListener = listener;
+  }
+
 
   start() {
     this.room.send({startGame: true})

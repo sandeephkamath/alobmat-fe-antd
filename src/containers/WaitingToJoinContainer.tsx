@@ -32,7 +32,7 @@ export const WaitingToJoinContainer = (props: WaitingToJoinContainerProps) => {
     <Space direction={"vertical"}>
       {props.playerNames.map(name => <p>{name} joined</p>)}
       {props.isHost ? startButton : null}
-      {props.isHost && props.roomId ? <a target={'_blank'} href={getLink()}>{getLink()}</a> : null}
+      {props.roomId ? <a target={'_blank'} href={getLink()}>{getLink()}</a> : null}
     </Space>
   </Card> : null;
 };

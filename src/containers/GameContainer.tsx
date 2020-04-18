@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {NameContainer} from "./NameContainer";
 import {message, Row} from "antd";
 import {RoomCreateOptionContainer} from "./RoomCreateOptionContainer";
@@ -7,7 +7,8 @@ import * as queryString from 'query-string';
 import {WaitingToJoinContainer} from "./WaitingToJoinContainer";
 import {ColyseusConnector} from "../colyesues/Connector";
 import {PlayerArea} from "./PlayerArea";
-import {Chit, Player} from "../colyesues/entities";
+import {Chit, Player, WonPlayer} from "../colyesues/entities";
+import {GameResultContainer} from "./GameResultContainer";
 
 export interface GameContainerProps {
   opponentsUpdate: (map: Map<string, Player>) => void;
@@ -25,6 +26,7 @@ export const GameContainer = (props: GameContainerProps) => {
   const [pickedNumbers, setPickedNumbers] = useState<Array<number>>([]);
   const [playerMap, setPlayerMap] = useState(new Map<string, Player>());
   const [chit, setChit] = useState<Chit>(new Chit());
+  const [wonPlayers, setWonPlayers] = useState<Array<WonPlayer>>([]);
 
   const shouldShowNameContainer = () => {
     return gameState === GameState.ENTER_NAME;
@@ -39,8 +41,11 @@ export const GameContainer = (props: GameContainerProps) => {
 
   const onNameEnter = (name: string) => {
     setName(name);
+    let roomId = queryString.parse(window.location.search)['roomId']?.toString() || '';
     const isNameSet: boolean = name.trim().length > 0;
     const isRoomSet: boolean = roomId.trim().length > 0;
+    setRoomId(roomId);
+
     if (isNameSet && isRoomSet) {
       onCreateRoom(false, name, roomId);
     } else if (isNameSet) {
@@ -48,13 +53,13 @@ export const GameContainer = (props: GameContainerProps) => {
     }
   };
 
-  useEffect(() => {
-    let roomId = queryString.parse(window.location.search)['roomId']?.toString() || '';
-    setRoomId(roomId);
-  }, []);
 
   const shouldShowCreateOptionContainer = () => {
     return gameState === GameState.CREATE_OR_JOIN;
+  };
+
+  const shouldShowGameResultContainer = () => {
+    return gameState === GameState.OVER;
   };
 
   const onPlayerChange = (player: Player) => {
@@ -70,7 +75,11 @@ export const GameContainer = (props: GameContainerProps) => {
 
   const onStart = () => {
     ColyseusConnector.start();
+  };
 
+  const onGameOver = (wonPlayers: Array<WonPlayer>) => {
+    setGameState(GameState.OVER);
+    setWonPlayers([...wonPlayers]);
   };
 
   const onGameStart = () => {
@@ -101,6 +110,7 @@ export const GameContainer = (props: GameContainerProps) => {
     ColyseusConnector.setGameStartListener(onGameStart);
     ColyseusConnector.setTurnChangeListener(onTurnChange);
     ColyseusConnector.setOpponentChangeListener(onOpponentEvent);
+    ColyseusConnector.setGameOverListener(onGameOver);
   };
 
   const onNumberPick = (num: number) => {
@@ -124,5 +134,6 @@ export const GameContainer = (props: GameContainerProps) => {
                 isPlayerTurn={isPlayerTurn}
                 visible={shouldShowPlayerArea()}
                 onNumberPick={onNumberPick}/>
+    <GameResultContainer visible={shouldShowGameResultContainer()} wonPlayers={wonPlayers}/>
   </Row>);
 };

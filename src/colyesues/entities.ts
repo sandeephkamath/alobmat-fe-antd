@@ -38,3 +38,9 @@ export class GameState extends Schema {
   @type(["number"])
   pickedNumbers = new ArraySchema<number>();
 }
+
+export interface WonPlayer {
+  playerId: string,
+  position: number,
+  name: string
+}
