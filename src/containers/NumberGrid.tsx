@@ -1,5 +1,6 @@
 import {Button, Row, Space} from "antd";
 import React from "react";
+import {range} from "../util/Util";
 
 export interface NumberGridProps {
   selectedNumbers: Array<number>;
@@ -7,8 +8,6 @@ export interface NumberGridProps {
 }
 
 export const NumberGrid = (props: NumberGridProps) => {
-
-  const range = (start: number, end: number) => Array.from({length: (end - start)}, (v, k) => k + start);
 
   const getNumberButton = (num: number) => {
     return (<Button disabled={props.selectedNumbers.indexOf(num) > -1}
