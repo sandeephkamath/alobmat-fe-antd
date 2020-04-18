@@ -6,6 +6,8 @@ export type SetPlayerId = (id: string) => any;
 export type SetRoomId = (id: string) => any;
 export type NewPlayerListener = (id: string) => any;
 
+export type TurnChangeListener = (isPlayerTurn: boolean, message: string, nextPlayerName: string) => any;
+
 
 class Connector {
 
@@ -15,6 +17,8 @@ class Connector {
   private newPlayerListener?: NewPlayerListener;
   private currentPlayerListener?: SetPlayerId;
   private numberPickListener?: (num: number) => void;
+  private gameStartListener?: VoidFunction;
+  private turnChangeListener?: TurnChangeListener;
 
 
   private getEndPoint() {
@@ -95,8 +99,27 @@ class Connector {
         })
       };
 
+      room.onMessage((message) => {
+        if (message === 'start' && this.gameStartListener) {
+          this.gameStartListener();
+        } else if (message.nextTurnPlayerId) {
+          const isPlayerTurn = message.nextTurnPlayerId === this.sessionId;
+          const pickedNumber = message.pickedNumber;
+          const pickedByPlayer = message.currentPlayerId === this.sessionId;
+          const pickedPlayerName = message.currentPlayerName;
+          let messageToDisplay = '';
+          if (pickedNumber) {
+            messageToDisplay = pickedByPlayer ? `You picked ${pickedNumber}` :
+                `${pickedPlayerName} picked ${pickedNumber}`;
+          }
+          const nextPlayerName = message.nextTurnPlayerName;
+          if (this.turnChangeListener) {
+            this.turnChangeListener(isPlayerTurn, messageToDisplay, nextPlayerName);
+          }
+        }
+      });
+
       room.state.pickedNumbers.onAdd = (num) => {
-        console.log(num);
         if (this.numberPickListener) {
           this.numberPickListener(num);
         }
@@ -126,8 +149,16 @@ class Connector {
     this.playerListener = listener;
   }
 
+  setGameStartListener(listener: VoidFunction) {
+    this.gameStartListener = listener;
+  }
+
   setCurrentPlayerIdListener(listener: SetPlayerId) {
     this.currentPlayerListener = listener;
+  }
+
+  setTurnChangeListener(listener: TurnChangeListener) {
+    this.turnChangeListener = listener;
   }
 
   setNewPlayerListener(newPlayerListener: NewPlayerListener) {

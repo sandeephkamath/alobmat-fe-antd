@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {NameContainer} from "./NameContainer";
-import {Row} from "antd";
+import {message, Row} from "antd";
 import {RoomCreateOptionContainer} from "./RoomCreateOptionContainer";
 import {GameState} from "./GameState";
 import * as queryString from 'query-string';
@@ -13,7 +13,9 @@ export const GameContainer = () => {
 
   const [name, setName] = useState('');
   const [roomId, setRoomId] = useState('');
+  const [nextPlayerName, setNextPlayerName] = useState('');
   const [isHost, setIsHost] = useState(false);
+  const [isPlayerTurn, setIsMyTurn] = useState(false);
   const [gameState, setGameState] = useState(GameState.ENTER_NAME);
   const [playerNames, setPlayerNames] = useState<Array<string>>([]);
   const [pickedNumbers, setPickedNumbers] = useState<Array<number>>([]);
@@ -56,11 +58,23 @@ export const GameContainer = () => {
 
   const onStart = () => {
     ColyseusConnector.start();
+
+  };
+
+  const onGameStart = () => {
     setGameState(GameState.PLAYING);
   };
 
   const onNewPlayerAdd = (playerName: string) => {
     setPlayerNames(playerNames => [...playerNames, playerName]);
+  };
+
+  const onTurnChange = (isPlayerTurn: boolean, numberMessage: string, nextPlayerName: string) => {
+    setIsMyTurn(isPlayerTurn);
+    setNextPlayerName(nextPlayerName);
+    if (numberMessage.trim().length > 0) {
+      message.info(numberMessage);
+    }
   };
 
   const onCreateRoom = (isHost: boolean, name: string, roomId?: string) => {
@@ -71,7 +85,9 @@ export const GameContainer = () => {
     ColyseusConnector.setNumberPickListener((num) => {
       setPickedNumbers((old) => [...old, num])
     });
-    ColyseusConnector.setPlayerListener(onPlayerChange)
+    ColyseusConnector.setPlayerListener(onPlayerChange);
+    ColyseusConnector.setGameStartListener(onGameStart);
+    ColyseusConnector.setTurnChangeListener(onTurnChange);
   };
 
   const onNumberPick = (num: number) => {
@@ -79,15 +95,21 @@ export const GameContainer = () => {
   };
 
   return (<Row>
-    <NameContainer visible={shouldShowNameContainer()} onNameEnter={onNameEnter}/>
+    <NameContainer visible={shouldShowNameContainer()}
+                   onNameEnter={onNameEnter}/>
     <RoomCreateOptionContainer visible={shouldShowCreateOptionContainer()}
                                name={name}
                                onCreateRoom={onCreateRoom}/>
-    <WaitingToJoinContainer onStart={onStart} visible={shouldShowWaitingToJoinContainer()}
+    <WaitingToJoinContainer onStart={onStart}
+                            visible={shouldShowWaitingToJoinContainer()}
                             roomId={roomId}
                             playerNames={playerNames}
                             isHost={isHost}/>
-    <PlayerArea chit={chit} pickedNumbers={pickedNumbers} visible={shouldShowPlayerArea()}
+    <PlayerArea chit={chit}
+                pickedNumbers={pickedNumbers}
+                nextPlayerName={nextPlayerName}
+                isPlayerTurn={isPlayerTurn}
+                visible={shouldShowPlayerArea()}
                 onNumberPick={onNumberPick}/>
   </Row>);
 };

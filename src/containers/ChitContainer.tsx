@@ -6,6 +6,7 @@ import {Block, Chit} from "../colyesues/entities";
 
 export interface ChitContainerProps {
   chit: Chit;
+  playerName: string;
 }
 
 export const ChitContainer = (props: ChitContainerProps) => {
@@ -23,6 +24,7 @@ export const ChitContainer = (props: ChitContainerProps) => {
   const chit = props.chit;
 
   return (<Space direction={"vertical"}>
+    <h3>{props.playerName}</h3>
     {getRowValues(chit.firstRow)}
     {getRowValues(chit.secondRow)}
     {getRowValues(chit.thirdRow)}

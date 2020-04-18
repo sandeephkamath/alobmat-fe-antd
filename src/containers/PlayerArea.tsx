@@ -8,14 +8,20 @@ export interface PlayerAreaProps {
   chit: Chit;
   pickedNumbers: Array<number>;
   visible: boolean;
+  nextPlayerName: string;
   onNumberPick: (num: number) => void;
+  isPlayerTurn: boolean;
 }
 
 export const PlayerArea = (props: PlayerAreaProps) => {
   return props.visible ? <Card>
     <Space direction={"vertical"}>
-      <ChitContainer chit={props.chit}/>
-      <NumberGrid selectedNumbers={props.pickedNumbers} onNumberPick={props.onNumberPick}/>
+      <ChitContainer
+          playerName={props.isPlayerTurn ? 'Your Turn' : `Waiting for ${props.nextPlayerName}`}
+          chit={props.chit}/>
+      <NumberGrid isPlayerTurn={props.isPlayerTurn}
+                  selectedNumbers={props.pickedNumbers}
+                  onNumberPick={props.onNumberPick}/>
     </Space>
   </Card> : null;
 };

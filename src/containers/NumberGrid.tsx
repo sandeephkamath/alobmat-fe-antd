@@ -5,12 +5,13 @@ import {range} from "../util/Util";
 export interface NumberGridProps {
   selectedNumbers: Array<number>;
   onNumberPick: (num: number) => void;
+  isPlayerTurn: boolean;
 }
 
 export const NumberGrid = (props: NumberGridProps) => {
 
   const getNumberButton = (num: number) => {
-    return (<Button disabled={props.selectedNumbers.indexOf(num) > -1}
+    return (<Button disabled={!props.isPlayerTurn || props.selectedNumbers.indexOf(num) > -1}
                     value={num}
                     onClick={() => props.onNumberPick(num)}
                     style={{width: '80px'}}>{num}</Button>);
