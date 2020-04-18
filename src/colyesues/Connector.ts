@@ -29,15 +29,17 @@ class Connector {
       endpoint += ":2657"
     }
     //return endpoint;
-    return "ws://localhost:2567";
+    return "ws://alobmat-server.herokuapp.com/";
   }
 
   joinNew(name: string, setRoomId: SetRoomId, roomId?: string) {
     const endPoint = this.getEndPoint();
     const colyseus = new Client(endPoint);
     let options = {name: name};
+    console.log("Trying");
     let roomPromise = roomId ? colyseus.joinById<GameState>(roomId, options) : colyseus.create<GameState>("my_room", options);
     roomPromise.then(room => {
+      console.log("joined");
       this.room = room;
       this.sessionId = room.sessionId;
       setRoomId(room.id);
@@ -93,7 +95,7 @@ class Connector {
         }
       }
 
-    })
+    }).catch(e => console.log(e))
   }
 
   send(num: string) {

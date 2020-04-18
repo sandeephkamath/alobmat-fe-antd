@@ -18,7 +18,7 @@ export const WaitingToJoinContainer = (props: WaitingToJoinContainerProps) => {
     return "Waiting for host to start the game"
   };
   const getLink = () => {
-    return `http://localhost:3000?roomId=${props.roomId}`;
+    return `${window.location.origin}?roomId=${props.roomId}`;
   };
 
   const canStart = () => {
