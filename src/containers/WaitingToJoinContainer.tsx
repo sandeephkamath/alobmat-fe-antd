@@ -12,13 +12,21 @@ export interface WaitingToJoinContainerProps {
 export const WaitingToJoinContainer = (props: WaitingToJoinContainerProps) => {
 
   const getTitle = () => {
-    return props.isHost ? "Click start" : "Waiting for host to start the game"
+    if (props.isHost) {
+      return canStart() ? "Click start" : "Waiting for players to join";
+    }
+    return "Waiting for host to start the game"
   };
   const getLink = () => {
     return `http://localhost:3000?roomId=${props.roomId}`;
   };
 
-  const startButton = <Button onClick={props.onStart}>Start </Button>
+  const canStart = () => {
+    return props.playerNames.length > 0;
+  };
+
+  const startButton = <Button disabled={!canStart()}
+                              onClick={props.onStart}>Start</Button>
 
   return props.visible ? <Card title={getTitle()} extra={<Spin/>}>
     <Space direction={"vertical"}>

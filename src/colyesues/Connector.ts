@@ -15,7 +15,6 @@ class Connector {
   private sessionId = "";
   private playerListener?: PlayerUpdateListener;
   private newPlayerListener?: NewPlayerListener;
-  private currentPlayerListener?: SetPlayerId;
   private numberPickListener?: (num: number) => void;
   private gameStartListener?: VoidFunction;
   private turnChangeListener?: TurnChangeListener;
@@ -28,42 +27,6 @@ class Connector {
     }
     //return endpoint;
     return "ws://localhost:2567";
-  }
-
-  join(name: string, setPlayer: SetPlayerId, roomId?: string) {
-    const endPoint = this.getEndPoint();
-    const colyseus = new Client(endPoint);
-    let roomPromise = roomId ? colyseus.joinById<GameState>(roomId) : colyseus.create<GameState>("my_room");
-    roomPromise.then(room => {
-      this.room = room;
-      this.sessionId = room.sessionId;
-      console.log("Room Id " + room.id);
-      setPlayer(room.sessionId);
-
-      room.state.players.onChange = (player, id) => {
-        if (id === this.sessionId) {
-          if (this.playerListener && player.chit.firstRow.length > 1) {
-            this.playerListener(player);
-          }
-        }
-      };
-
-      room.state.onChange = (changes) => {
-        changes.forEach(change => {
-          if (change.field === "currentPlayerId") {
-            console.log("Change triggered " + change.value);
-            if (this.currentPlayerListener) {
-              this.currentPlayerListener(change.value);
-            }
-          }
-        })
-      };
-
-      room.state.players.onAdd = (player, id) => {
-        console.log("Player added");
-      }
-
-    })
   }
 
   joinNew(name: string, setRoomId: SetRoomId, roomId?: string) {
@@ -83,20 +46,6 @@ class Connector {
             this.playerListener(player);
           }
         }
-      };
-
-      room.state.onChange = (changes) => {
-        changes.forEach(change => {
-          if (change.field === "currentPlayerId") {
-            console.log("Turn Change triggered " + change.value);
-            if (this.currentPlayerListener) {
-              this.currentPlayerListener(change.value);
-            }
-          } else {
-            /*console.log("Change in field " + change.field);
-            console.log("Change in field  value" + change.value);*/
-          }
-        })
       };
 
       room.onMessage((message) => {
@@ -127,7 +76,6 @@ class Connector {
 
       room.state.players.onAdd = (player, id) => {
         if (id !== this.sessionId) {
-          console.log(player.name + " was added");
           if (this.newPlayerListener) {
             this.newPlayerListener(player.name);
           }
@@ -151,10 +99,6 @@ class Connector {
 
   setGameStartListener(listener: VoidFunction) {
     this.gameStartListener = listener;
-  }
-
-  setCurrentPlayerIdListener(listener: SetPlayerId) {
-    this.currentPlayerListener = listener;
   }
 
   setTurnChangeListener(listener: TurnChangeListener) {
