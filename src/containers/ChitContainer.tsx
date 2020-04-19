@@ -13,13 +13,15 @@ export const ChitContainer = (props: ChitContainerProps) => {
 
   const getRowValues = (row: ArraySchema<Block>) => {
     const values = range(0, 9).map(() => "*");
-    row.forEach(block => {
+    row.forEach((block: Block) => {
       if (block && block.checked) {
-        const index = Math.floor(block.value / 10);
+        let quotient = block.value / 10;
+        const index = quotient % 1 === 0 ? quotient - 1 : Math.floor(quotient);
         values[index] = block.value.toString();
       }
     });
-    return <Space>{values.map(value => <Button style={{width: '30px',padding:'5px'}}>{value}</Button>)}</Space>;
+    return <Space>{values.map(value => <Button
+        style={{width: '30px', padding: '5px'}}>{value}</Button>)}</Space>;
   };
   const chit = props.chit;
 

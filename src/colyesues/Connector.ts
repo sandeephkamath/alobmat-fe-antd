@@ -1,4 +1,5 @@
-import {Client, Room} from "colyseus.js";
+// @ts-ignore
+import {Client, Room} from 'colyseus.js';
 import {GameState, Player, WonPlayer} from "./entities";
 
 export type PlayerUpdateListener = (player: Player) => void;
