@@ -29,7 +29,7 @@ class Connector {
       endpoint += ":2657"
     }
     //return endpoint;
-    return "ws://alobmat-server.herokuapp.com/";
+    return "wss://alobmat-server.herokuapp.com/";
   }
 
   joinNew(name: string, setRoomId: SetRoomId, roomId?: string) {
@@ -38,12 +38,12 @@ class Connector {
     let options = {name: name};
     console.log("Trying");
     let roomPromise = roomId ? colyseus.joinById<GameState>(roomId, options) : colyseus.create<GameState>("my_room", options);
-    roomPromise.then(room => {
+    roomPromise.then((room: Room<GameState>) => {
       console.log("joined");
       this.room = room;
       this.sessionId = room.sessionId;
       setRoomId(room.id);
-      room.state.players.onChange = (player, id) => {
+      room.state.players.onChange = (player: Player, id: string) => {
         if (id === this.sessionId) {
           if (this.playerListener) {
             this.playerListener(player);
@@ -55,7 +55,7 @@ class Connector {
         }
       };
 
-      room.onMessage((message) => {
+      room.onMessage((message: any) => {
         if (message === 'start' && this.gameStartListener) {
           this.gameStartListener();
         } else if (message.nextTurnPlayerId) {
@@ -81,13 +81,13 @@ class Connector {
         }
       });
 
-      room.state.pickedNumbers.onAdd = (num) => {
+      room.state.pickedNumbers.onAdd = (num: number) => {
         if (this.numberPickListener) {
           this.numberPickListener(num);
         }
       };
 
-      room.state.players.onAdd = (player, id) => {
+      room.state.players.onAdd = (player: Player, id: string) => {
         if (id !== this.sessionId) {
           if (this.newPlayerListener) {
             this.newPlayerListener(player.name);
@@ -95,7 +95,7 @@ class Connector {
         }
       }
 
-    }).catch(e => console.log(e))
+    }).catch((e: any) => console.log(e))
   }
 
   send(num: string) {
